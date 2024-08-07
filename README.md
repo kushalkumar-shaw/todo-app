@@ -4,6 +4,9 @@ This is a simple Todo App built using Next.js with server-side rendering.
 
 ![Todo App Screenshot](./public/landing-page.png)
 
+## Live Demo
+You can view the live application here: [Live Demo](https://todo-app-ks.netlify.app/)
+
 ## Features
 
 - Add new todos
