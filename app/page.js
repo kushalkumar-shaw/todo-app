@@ -1,95 +1,170 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import React, { useState } from "react";
 
-export default function Home() {
+const App = () => {
+  const [userInput, setUserInput] = useState("");
+  const [list, setList] = useState([]);
+  const [editIndex, setEditIndex] = useState(null); // Track index of item to edit
+
+  // Set a user input value
+  const updateInput = (value) => {
+    setUserInput(value);
+  };
+
+  // Add or edit item
+  const handleAction = () => {
+    if (userInput.trim() === "") return; // Avoid adding empty items
+
+    if (editIndex !== null) {
+      // Edit existing item
+      const updatedList = list.map((item, index) =>
+        index === editIndex ? { ...item, value: userInput } : item
+      );
+      setList(updatedList);
+      setEditIndex(null); // Reset edit mode
+    } else {
+      // Add new item
+      const newItem = {
+        id: Math.random(), // Consider using a more reliable ID generator
+        value: userInput,
+      };
+      setList([...list, newItem]);
+    }
+
+    setUserInput(""); // Clear input field
+  };
+
+  // Function to delete item from list using id to delete
+  const deleteItem = (id) => {
+    const updatedList = list.filter((item) => item.id !== id);
+    setList(updatedList);
+  };
+
+  // Function to enable editing mode
+  const startEdit = (index) => {
+    setUserInput(list[index].value);
+    setEditIndex(index); // Set the index of the item to be edited
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        maxWidth: "600px",
+        margin: "0 auto",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: "2.5rem",
+          fontWeight: "bold",
+          marginBottom: "20px",
+          color: "#03346E",
+        }}
+      >
+        TODO LIST
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+          marginBottom: "20px",
+        }}
+      >
+        Create your todos here...
+      </div>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}
+      >
+        <input
+          style={{
+            fontSize: "1.2rem",
+            padding: "10px",
+            marginRight: "10px",
+            flexGrow: "1",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+          placeholder={editIndex !== null ? "Edit item..." : "Add item..."}
+          value={userInput}
+          onChange={(e) => updateInput(e.target.value)}
         />
+        <button
+          style={{
+            fontSize: "1.2rem",
+            padding: "10px 20px",
+            backgroundColor: "#021526",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+          onClick={handleAction}
+        >
+          {editIndex !== null ? "Update" : "ADD"}
+        </button>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div
+        style={{ background: "#f9f9f9", padding: "20px", borderRadius: "8px" }}
+      >
+        {list.length > 0 ? (
+          list.map((item, index) => (
+            <div
+              key={item.id} // Use the unique id as the key
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span style={{ fontSize: "1.2rem", flexGrow: "1" }}>
+                {item.value}
+              </span>
+              <span>
+                <button
+                  style={{
+                    padding: "10px",
+                    backgroundColor: "#f44336",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    marginRight: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => deleteItem(item.id)}
+                >
+                  Delete
+                </button>
+                <button
+                  style={{
+                    padding: "10px",
+                    backgroundColor: "#2196f3",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => startEdit(index)}
+                >
+                  Edit
+                </button>
+              </span>
+            </div>
+          ))
+        ) : (
+          <div
+            style={{ textAlign: "center", fontSize: "1.2rem", color: "#777" }}
+          >
+            No items in the list
+          </div>
+        )}
       </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default App;
